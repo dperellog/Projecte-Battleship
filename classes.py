@@ -2,13 +2,33 @@ import random
 
 class Tauler(object):
     tIDs = 0
-    def __init__(self, mida, vaixells=[], nomJugador=''):
+    llenguatges = {'ca' : {
+        'time-to-shot': 'A disparar un tret!',
+        'remaining' : "Vides restants: {0}",
+        
+        
+        
+        
+        },'es':{
+
+        },'en':{
+
+
+
+
+
+
+        }}
+    def __init__(self, mida, vaixells=[], nomJugador='', vides=0):
         self.__class__.tIDs +=1
         self.tID = self.__class__.tIDs
         self.nomJugador = nomJugador
         self.mida = mida
         self.matriu = self.iniciarTauler(self.mida)
         self.llVaixells = vaixells
+        self.colocarVaixells()
+        self.vides = vides
+        self.videsActives = (vides > 0)
     
     #Metodes per obtenir atributs:
     def getID(self):
@@ -17,11 +37,22 @@ class Tauler(object):
     def getCasella(self, coords):
         return self.matriu[coords[0]][coords[1]]
 
-    #Metodes del objecte:
+    def jugadorViu(self):
+        if self.videsActives:
+            return self.vides > 0
+        else:
+            return True
+    
+    def videsRestants(self):
+        return self.vides
+
+    def getName(self):
+        return self.nomJugador
+    #Metodes del tauler:
     def iniciarTauler(self, mida):
         return [[Casella() for j in range(mida)] for i in range(mida)]
 
-    def mostraTauler(self, dev=True):
+    def mostraTauler(self, dev=False):
         espais = len(str(self.mida))
         abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         #Imprimir índex abecedari:
@@ -86,6 +117,12 @@ class Tauler(object):
                 if self.submatriuBuida(coords, orientacio, vaixell):
                     Vaixell(vaixell).generarVaixell(self,orientacio,coords)
                     vaixellColocat = True
+
+    def feedback(self, missatge, idioma, s1='', s2=''):
+        print(self.llenguatges[idioma][missatge].format(s1, s2))
+    
+    #Metodes per jugar:
+
 
 class Vaixell(object):
     def __init__(self, mida):
