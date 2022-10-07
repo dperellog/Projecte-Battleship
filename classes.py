@@ -2,23 +2,6 @@ import random
 
 class Tauler(object):
     tIDs = 0
-    llenguatges = {'ca' : {
-        'time-to-shot': 'A disparar un tret!',
-        'remaining' : "Vides restants: {0}",
-        
-        
-        
-        
-        },'es':{
-
-        },'en':{
-
-
-
-
-
-
-        }}
     def __init__(self, mida, vaixells=[], nomJugador='', vides=0):
         self.__class__.tIDs +=1
         self.tID = self.__class__.tIDs
@@ -26,9 +9,11 @@ class Tauler(object):
         self.mida = mida
         self.matriu = self.iniciarTauler(self.mida)
         self.llVaixells = vaixells
+        self.vaixellsActius = 0
         self.colocarVaixells()
         self.vides = vides
-        self.videsActives = (vides > 0)
+        self.videsActivades = (vides > 0)
+        self.jocAcabat = False
     
     #Metodes per obtenir atributs:
     def getID(self):
@@ -38,7 +23,7 @@ class Tauler(object):
         return self.matriu[coords[0]][coords[1]]
 
     def jugadorViu(self):
-        if self.videsActives:
+        if self.videsActivades:
             return self.vides > 0
         else:
             return True
@@ -46,8 +31,18 @@ class Tauler(object):
     def videsRestants(self):
         return self.vides
 
+    def videsActives(self):
+        return self.videsActivades
+
+    def restarVida(self):
+        self.vides -= 1
+
     def getName(self):
         return self.nomJugador
+
+    def partidaGuanyada(self):
+        return self.jocAcabat
+
     #Metodes del tauler:
     def iniciarTauler(self, mida):
         return [[Casella() for j in range(mida)] for i in range(mida)]
@@ -115,6 +110,15 @@ class Tauler(object):
                 if self.submatriuBuida(coords, orientacio, vaixell):
                     Vaixell(vaixell).generarVaixell(self,orientacio,coords)
                     vaixellColocat = True
+            self.vaixellsActius += 1
+
+    def vaixellEnfonsat(self):
+        if self.vaixellsActius > 0:
+            self.vaixellsActius -= 1
+
+        if self.vaixellsActius == 0:
+            self.jocAcabat = True
+        
 
     def feedback(self, missatge, idioma, s1='', s2=''):
         print(self.llenguatges[idioma][missatge].format(s1, s2))
@@ -125,7 +129,7 @@ class Tauler(object):
 class Vaixell(object):
     def __init__(self, mida):
         self.mida = mida
-        self.vides = mida
+        self.vides = mida-1
         self.visual = 'X'
     
     def generarVaixell(self, tauler, orientacio, coord):
@@ -142,8 +146,10 @@ class Vaixell(object):
     def tocat(self):
         if self.vides > 0:
             self.vides -= 1
+            return False
         else:
             self.visual = "#"
+            return True
 
 class Casella(object):
     def __init__(self):
@@ -161,7 +167,7 @@ class Casella(object):
 
     def printDev(self):
         if isinstance(self.content, Vaixell):
-            return "X"
+            return self.content.getVisual()
         else:
             return self.content
 
@@ -173,3 +179,10 @@ class Casella(object):
 
     def teVaixell(self):
         return isinstance(self.content, Vaixell)
+
+    def casellaOberta(self):
+        if not(self.visible):
+            self.visible = True
+            return False
+        else:
+            return True

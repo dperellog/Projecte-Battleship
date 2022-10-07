@@ -1,4 +1,8 @@
 from classes import *
+
+
+abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 def mostraMenu():
     accio = 0
     print("""
@@ -14,25 +18,15 @@ def mostraMenu():
             accio = 0
     return int(accio)
  
-def nouTauler():
-    global jocsActius
-    global MIDATAULELL
-    global FLOTA
-    global VIDES
-
-
-
+def nouTauler(jocsActius, MIDATAULELL, FLOTA, VIDES):
     sortir = False
     while not(sortir):
         vides = input("Vols jugar amb vides? [S/n]: ")
         if vides.upper() in "SN":
             sortir = True
-    
     nomTauler = input("Introdueix un nom pel tauler: ")
-
     tauler = Tauler(MIDATAULELL,FLOTA,nomTauler,(VIDES if vides == 'S' else 0))
     jocsActius[tauler.getID] = tauler
-    
     return tauler.getID
 
 def tuplaCoords(coord, mida):
@@ -52,12 +46,14 @@ def tuplaCoords(coord, mida):
 
 def tret(tauler, coords):
     coords = tuple([int(coords[0]), abc.index(coords[1])])
+
+    print(coords)
     casella = tauler.getCasella(coords)
     if not(casella.casellaOberta()):
         if casella.teVaixell():
             resultat = casella.getCasella().tocat()
             if resultat:
-                nomVaixell = casella.getCasella().getNom()
+                tauler.vaixellEnfonsat()
                 return 2
             else:
                 return 1
