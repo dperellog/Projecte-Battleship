@@ -126,6 +126,7 @@ class Tauler(object):
     #Metodes per jugar:
 
 
+
 class Vaixell(object):
     def __init__(self, mida):
         self.mida = mida
