@@ -68,9 +68,7 @@ class Tauler(object):
                 if dev:
                     print(columna.printDev(), end=" ")
                 else:
-                    if not(columna):
-                        print(".", end=" ")
-                    else:
+                    
                         print(columna, end=" ")
             print()
             f+=1
@@ -162,8 +160,10 @@ class Casella(object):
         if self.visible:
             if isinstance(self.content, Vaixell):
                 return self.content.getVisual()
+            else:
+                return "~"
         else:
-            return "~"
+            return "·"
 
     def printDev(self):
         if isinstance(self.content, Vaixell):

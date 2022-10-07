@@ -1,5 +1,6 @@
 from classes import *
 
+
 abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 def mostraMenu():
@@ -45,6 +46,7 @@ def tuplaCoords(coord, mida):
 
 def tret(tauler, coords):
     coords = tuple([int(coords[0]), abc.index(coords[1])])
+
     print(coords)
     casella = tauler.getCasella(coords)
     if not(casella.casellaOberta()):
@@ -69,9 +71,9 @@ def partida(tauler):
             if tauler.partidaGuanyada():
                 return 1
             if tauler.videsActives():
-                print(f'Vides restants: {tauler.videsRestants()}')
+                print(f'\nVides restants: {tauler.videsRestants()}')
             print('A disparar un tret!\n')
-            tauler.mostraTauler(True)
+            tauler.mostraTauler()
 
             casella = input("Introdueix la coordenada (ej. 3J): ").upper()
             if casella != '':
@@ -87,6 +89,8 @@ def partida(tauler):
                         tauler.restarVida()
                     elif resultat == -1:
                         print("Ja has descobert la coordenada!")
+                else:
+                    print("Coordenada incorrecte!")
         else:
             return 0
     return -1
