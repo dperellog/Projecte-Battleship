@@ -152,15 +152,17 @@ class Tauler(object):
 
     def comprovarCoordenades(self, coord):
         mida = self.mida
-        cCorrecte = True
+        numCorrecte = False
+        llCorrecte = False
 
         if len(coord) > 1:
-            for el in coord[:-1]:
-                if el not in self.nums:
-                    cCorrecte = False
-            if coord[-1] not in self.abc[:mida]:
-                cCorrecte = False
-        return cCorrecte
+            if coord[:-1].isnumeric():
+                if int(coord[:-1]) < mida:
+                    numCorrecte = True
+            if coord[-1] in self.abc[:mida]:
+                llCorrecte = True
+        
+        return numCorrecte and llCorrecte
     
     def jugar(self):
         partidaActiva = True
@@ -189,7 +191,7 @@ class Tauler(object):
                         return False
                     if self.comprovarCoordenades(casella):
                         cCorrecte = True
-                self.tret(casella)
+                        self.tret(casella)
     
 
 
