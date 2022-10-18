@@ -1,13 +1,15 @@
 import random
+import languages as get
 
 class Tauler(object):
     tIDs = 0
     abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     nums = "0123456789"
-    def __init__(self, mida, vaixells=[], nomJugador='', vides=0):
+    def __init__(self, mida, vaixells=[], nomJugador='', vides=0, lang='ca'):
         self.__class__.tIDs +=1
         self.tID = self.__class__.tIDs
         self.nomJugador = nomJugador
+        self.lang = lang
         self.mida = mida
         self.matriu = self.iniciarTauler(self.mida)
         self.llVaixells = vaixells
@@ -18,7 +20,8 @@ class Tauler(object):
         self.jocAcabat = False
     
     def __str__(self):
-        return f"Tauler ID {self.getID()} - {self.getName()}"
+        return get.text('playground/info', self.lang, self.getID(), self.getName())
+
 
     #Metodes per obtenir atributs:
     def getID(self):
@@ -117,7 +120,7 @@ class Tauler(object):
 
                     #Si hi ha espai, col·loca el vaixell:
                     if self.submatriuBuida(coords, orientacio, vaixell['mida']):
-                        Vaixell(vaixell['mida'], vaixell['nom']).generarVaixell(self,orientacio,coords)
+                        Vaixell(vaixell['mida'], get.text(vaixell['nom'], self.lang)).generarVaixell(self,orientacio,coords)
                         vaixellColocat = True
                 self.vaixellsActius += 1
 
@@ -138,14 +141,14 @@ class Tauler(object):
                 vaixellMort = vaixell.tocat()
                 if vaixellMort:
                     self.vaixellEnfonsat()
-                    print(f"HAS ENFONSAT {vaixell.getName().upper()}!")
+                    get.text('playground/sink', self.lang, vaixell.getName().upper(), mostrar=True)
                 else:
-                    print("TOCAT!")
+                    get.text('playground/touched', self.lang, mostrar=True)
             else:
-                print("AIGUA!")
+                get.text('playground/water', self.lang, mostrar=True)
                 self.restarVida()
         else:
-            print("Ja has descobert la coordenada!")
+            get.text('errors/cordOpened', self.lang, mostrar=True)
 
     def comprovarCoordenades(self, coord):
         mida = self.mida
@@ -155,41 +158,38 @@ class Tauler(object):
             for el in coord[:-1]:
                 if el not in self.nums:
                     cCorrecte = False
-            if coord[-1] not in self.abc:
+            if coord[-1] not in self.abc[:mida]:
                 cCorrecte = False
         return cCorrecte
     
     def jugar(self):
-        #0: Tornar al menu
-        #1: Jugador mort
-        #2: Partida guanyada
         partidaActiva = True
         
-        print(f"Tauler (ID {self.getID()}): {self.getName()}.")
-        print("Recorda! Per sortir del tauler, envia una coordenada buida!")
+        get.text('playground/info', self.lang, self.getID(), self.getName(), mostrar=True)
+        get.text('playground/exitPlaygroundInfo', self.lang, mostrar=True)
 
         while partidaActiva:
             if self.partidaGuanyada():
-                return 2
+                get.text('playground/winMessage', self.lang, mostrar=True)
+                self.mostraTauler(True)
+                return True
             if not(self.jugadorViu()):
-                return 1
+                print(get.text('playground/deathMessage', self.lang)+'\n')
+                self.mostraTauler(True)
+                return True
             else:
                 if self.videsActives():
-                    print(f'\nVides restants: {self.videsRestants()}')
-                print('A disparar un tret!\n')
-                self.mostraTauler(True)
+                    get.text('playground/remaining', self.lang, self.videsRestants(), mostrar=True)
+                print(get.text('playground/time-to-shot', self.lang)+'\n')
+                self.mostraTauler()
                 cCorrecte = False
                 while not(cCorrecte):
-                    casella = input("Introdueix la coordenada (ej. 3J): ").upper()
+                    casella = input(get.text('playground/insertCord', self.lang)).upper()
                     if casella == '':
-                        return 0
+                        return False
                     if self.comprovarCoordenades(casella):
                         cCorrecte = True
                 self.tret(casella)
-
-
-    def feedback(self, missatge, idioma, s1='', s2=''):
-        print(self.llenguatges[idioma][missatge].format(s1, s2))
     
 
 
@@ -199,7 +199,7 @@ class Vaixell(object):
         self.mida = mida
         self.vides = mida-1
         self.visual = 'X'
-        self.name = nom
+        self.name = nom 
     
     def generarVaixell(self, tauler, orientacio, coord):
         if orientacio == 'h':

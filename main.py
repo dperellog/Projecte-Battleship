@@ -1,12 +1,13 @@
 from classes import *
-from functions import *
+import languages as get
 
 MIDATAULELL = 10
-FLOTA = [{'nom':'un portaavions','mida':4,'quantitat':1},
-        {'nom':'un cuirassat','mida':3,'quantitat':2},
-        {'nom':'una fragata','mida':2,'quantitat':3},
-        {'nom':'una patrullera','mida':1,'quantitat':4}]
+FLOTA = [{'nom':'fleet/four','mida':4,'quantitat':1},
+        {'nom':'fleet/three','mida':3,'quantitat':2},
+        {'nom':'fleet/two','mida':2,'quantitat':3},
+        {'nom':'fleet/one','mida':1,'quantitat':4}]
 VIDES = 3
+LLENGUATGES = ('ca', 'es', 'en')
 lang = ''
 accio = 0
 
@@ -16,16 +17,13 @@ taulerActual = 0
 #Funcions:
 def mostraMenu():
     accio = 0
-    print("""
-=>Què vols fer?
-
-1. Començar nova partida.
-2. Recuperar partida anterior.
-3. Sortir del joc.
-    """)
+    get.text('menu/options',lang, mostrar=True)
     while accio == 0:
-        accio = input("Tria una opció: ")
-        if int(accio) not in range(1,4):
+        accio = input(get.text('menu/select-option', lang))
+        if accio.isnumeric():
+            if int(accio) not in range(1,5):
+                accio = 0
+        else:
             accio = 0
     return int(accio)
 
@@ -34,25 +32,42 @@ def nouTauler(MIDATAULELL, FLOTA, VIDES):
 
     sortir = False
     while not(sortir):
-        vides = input("Vols jugar amb vides? [S/n]: ")
-        if vides.upper() in "SN":
+        langTauler = input(get.text('playground/selectLang', lang, lang.upper(), LLENGUATGES)).lower()
+        if langTauler in LLENGUATGES:
             sortir = True
-    nomTauler = input("Introdueix un nom pel tauler: ")
-    tauler = Tauler(MIDATAULELL,FLOTA,nomTauler,(VIDES if vides == 'S' else 0))
+        elif langTauler == '':
+            langTauler = lang
+            sortir = True
+
+    sortir = False
+    while not(sortir):
+        vides = input(get.text('playground/playWLives', langTauler))
+        if (langTauler in ('ca','es')) and (vides.upper() in "SN"):
+            sortir = True
+        if (langTauler in ('en')) and (vides.upper() in "YN"):
+            sortir = True
+
+    
+    nomTauler = input(get.text('playground/enterName', langTauler))
+    tauler = Tauler(MIDATAULELL,FLOTA,nomTauler,(0 if vides.upper() == 'N' else VIDES), langTauler)
     jocsActius[tauler.getID()] = tauler
     return str(tauler.getID())
 
 
+def canviarIdioma():
+    global lang
+    lang = ''
+    while lang == '':
+        lang = input(f'\nSelect a language {LLENGUATGES}: ').lower()
+        if lang not in LLENGUATGES:
+            lang = ''
 
-#- Programa principal: -#ca
-while lang == '':
-    lang = input('\nSelect a language [ca, es, en]: ')
-    if lang not in ('ca'):
-        lang = ''
+#- Programa principal: -#
+canviarIdioma()
 
-#print(instruccions[lang]['banner-motd'])
+get.text('menu/welcome', lang, mostrar=True)
 
-while accio != 3:
+while accio != 4:
     accio = mostraMenu()
     
     if accio == 1:
@@ -60,21 +75,28 @@ while accio != 3:
         taulerActual = nouTauler(MIDATAULELL, FLOTA, VIDES)
 
         resultat = jocsActius[taulerActual].jugar()
-        if resultat == 1:
-            print('El jugador ha mort!')
-        elif resultat == 2:
-            print("FELICITATS! HAS GUANYAT!")
+        if resultat:
+            del jocsActius[taulerActual]
             
 
     if accio == 2:
-        taulers = []
-        for tauler in jocsActius.keys():
-            taulers += jocsActius[tauler].getMatriu()
-
-        for i in range(2):
-            for k in range(len(taulers)):
-                for j in range(3):
-                    #print(str(taulers[k][i][j]), end=' ')
-                    print(k,i,j, end=' ')
-                print('   ', end='')
-            print()
+        if len(jocsActius) > 0:
+            print("\n"+get.text('menu/activePlaygrounds', lang)+"\n")
+            for tauler in jocsActius:
+                get.text('playground/info', lang, tauler, jocsActius[tauler].getName(), mostrar=True)
+            
+            taulerCorrecte = False
+            while not(taulerCorrecte):
+                taulerID = input(get.text('menu/insertID', lang))
+                if taulerID in jocsActius.keys():
+                    taulerActual = taulerID
+                    taulerCorrecte = True
+                    
+            resultat = jocsActius[taulerActual].jugar()
+            if resultat:
+                del jocsActius[taulerActual]
+        else:
+            get.text('errors/playgroundsNotFound', lang, mostrar=True)
+    
+    if accio == 3:
+        canviarIdioma()
