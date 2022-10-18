@@ -6,7 +6,7 @@ FLOTA = [{'nom':'fleet/four','mida':4,'quantitat':1},
         {'nom':'fleet/three','mida':3,'quantitat':2},
         {'nom':'fleet/two','mida':2,'quantitat':3},
         {'nom':'fleet/one','mida':1,'quantitat':4}]
-VIDES = 3
+VIDES = 50
 LLENGUATGES = ('ca', 'es', 'en')
 lang = ''
 accio = 0
