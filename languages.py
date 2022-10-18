@@ -112,7 +112,7 @@ lang = {
                 'touched' : '¡TOCADO!',
                 'water' : '¡AGUA!',
                 'sink' : '¡HAS HUNDIDO {0}!',
-                'winMessage' : '¡FELICIDADES! HAS GANADO!',
+                'winMessage' : '¡FELICIDADES! ¡HAS GANADO!',
                 'deathMessage' : '¡Qué pena! El jugador ha muerto!',
 
         },
