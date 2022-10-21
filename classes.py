@@ -8,14 +8,13 @@ class Tauler(object):
     
     #Constants de classe ("helpers"):
     abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    nums = "0123456789"
 
     #Constructor:
-    def __init__(self, mida, vaixells=[], nomJugador='', vides=0, lang='ca'):
+    def __init__(self, mida, vaixells=[], nomTauler='', vides=0, lang='ca'):
         #Definir propietats base:
         self.__class__.tIDs +=1
         self.tID = self.__class__.tIDs
-        self.nomJugador = nomJugador
+        self.nomTauler = nomTauler
         self.lang = lang
         self.mida = mida
         self.vides = vides
@@ -36,42 +35,32 @@ class Tauler(object):
         return str(self.tID)
 
     def getName(self):
-        return self.nomJugador
+        return self.nomTauler
+
+    #Metodes del tauler:
 
     def getCasella(self, coords):
         #Obtenir el contingut de la casella (retorna un objecte tipus Casella).
         return self.matriu[coords[0]][coords[1]]
-
-    def getMatriu(self):
-        return self.matriu
 
     def jugadorViu(self):
         if self.videsActivades:
             return self.vides > 0
         else:
             return True
-    
-    def videsRestants(self):
-        return self.vides
-
-    def videsActives(self):
-        return self.videsActivades
 
     def restarVida(self):
         self.vides -= 1
 
-
-
-    #Metodes del tauler:
     def iniciarTauler(self, mida):
         return [[Casella() for j in range(mida)] for i in range(mida)]
 
     def mostraTauler(self, dev=False):
         espais = len(str(self.mida))
-        abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
         #Imprimir índex abecedari:
         print(" "*espais, end=" ")
-        for lletra in abc[:self.mida]:
+        for lletra in self.abc[:self.mida]:
             print(f"{lletra} ", end="")
         print()
 
@@ -153,7 +142,7 @@ class Tauler(object):
             self.jocAcabat = True
 
     #Funció que valida que la coordenada entrada existeixi dins de tauler.
-    def comprovarCoordenades(self, coord):
+    def comprovarCoords(self, coord):
         mida = self.mida
         numCorrecte = False
         llCorrecte = False
@@ -201,7 +190,7 @@ class Tauler(object):
 
         partidaActiva = True
         
-        get.text('playground/info', self.lang, self.tID, self.getName(), mostrar=True)
+        get.text('playground/info', self.lang, self.tID, self.nomTauler, mostrar=True)
         get.text('playground/exitPlaygroundInfo', self.lang, mostrar=True)
 
         while partidaActiva:
@@ -217,8 +206,8 @@ class Tauler(object):
 
             #Si no s'ha acabat el joc, demana al jugador noves coordenades i fes el tret.
             else:
-                if self.videsActives():
-                    get.text('playground/remaining', self.lang, self.videsRestants(), mostrar=True)
+                if self.videsActivades:
+                    get.text('playground/remaining', self.lang, self.vides, mostrar=True)
                 print(get.text('playground/time-to-shot', self.lang)+'\n')
                 self.mostraTauler()
                 cCorrecte = False
@@ -226,7 +215,7 @@ class Tauler(object):
                     casella = input(get.text('playground/insertCord', self.lang)).upper()
                     if casella == '':
                         return False
-                    if self.comprovarCoordenades(casella):
+                    if self.comprovarCoords(casella):
                         cCorrecte = True
                         self.tret(casella)
     
